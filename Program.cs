@@ -1,5 +1,4 @@
-﻿
-class Program
+﻿class Program
 {
     public static int Main(string[] args)
     {
@@ -8,26 +7,58 @@ class Program
         var outFile = ArgumentParser.GetString(args, "--out");
         Console.WriteLine($"--out: {outFile}");
 
-        var csv = File.ReadAllLines(inFile);
-
-        for (int i = 0; i < csv.Length; i++)
+        string[] csv = File.ReadAllLines(inFile);
+        List<string[]> table = new List<string[]>();
+        foreach (var row in csv)
         {
-            var item = csv[i];
-            item = item.Replace(",", "|");
-            Console.WriteLine($"|{item}|");
+            string[] cols = row.Split(',');
+            List<string> colsWithotWiteSpaces = new List<string>();
+            foreach (var col in cols)
+            {
+                colsWithotWiteSpaces.Add(col.Trim());
+            }
+            table.Add(colsWithotWiteSpaces.ToArray());
+        }
 
+        string[][] tableArray = table.ToArray();
+        for (int i = 0; i < tableArray.Length; i++)
+        {
+            var row = tableArray[i];
+            string text = "|";
+            for (int j = 0; j < row.Length; j++)
+            {
+                var columnSize = GetColumnSize(tableArray, j);
+                text += " " + row[j].PadRight(columnSize, ' ') + " |";
+            }
+            Console.WriteLine(text);
+
+            // |---|---|...|---|
             if (i == 0)
             {
-                var colSize = item.Split("|").Count();
+                var colSize = row.Length;
+                text = "|";
                 for (int j = 0; j < colSize; j++)
                 {
-                    Console.Write("|---");
+                    var columnSize = GetColumnSize(tableArray, j);
+                    text += "".PadRight(columnSize + 2, '-') + "|";
                 }
-                Console.WriteLine("|");
+                Console.WriteLine(text);
             }
         }
 
-
         return 0;
+    }
+    static int GetColumnSize(string[][] table, int index)
+    {
+        int size = 1;
+        for (int i = 0; i < table.Count(); i++)
+        {
+            var value = table[i][index];
+            if (size < value.Length)
+            {
+                size = value.Length;
+            }
+        }
+        return size;
     }
 }
