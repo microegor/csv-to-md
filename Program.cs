@@ -2,6 +2,17 @@
 {
     public static int Main(string[] args)
     {
+        var help = ArgumentParser.GetBoolean(args, "--help") || ArgumentParser.GetBoolean(args, "-h");
+        if (help)
+        {
+            Console.WriteLine("Usage: Program --in < inputfile > --out < outputfile > [-d,--debug][-h,--help]");
+            Console.WriteLine("Options:");
+            Console.WriteLine("  --in        Specifies the input CSV file");
+            Console.WriteLine("  --out       Specifies the output file(not implemented yet)");
+            Console.WriteLine("  -d,--debug  Enables debug mode for detailed error output");
+            Console.WriteLine("  -h,--help   Displays this help message   ");
+            return 0;
+        }
         var inFile = ArgumentParser.GetString(args, "--in");
         Console.WriteLine($"--in: {inFile}");
         var outFile = ArgumentParser.GetString(args, "--out");

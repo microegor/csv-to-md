@@ -1,5 +1,18 @@
 class ArgumentParser
 {
+    public static bool GetBoolean(string[] args, string name)
+    {
+        for (int i = 0; i < args.Length; i++)
+        {
+            var item = args[i];
+            if (item == name)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static string GetString(string[] args, string name)
     {
         for (int i = 0; i < args.Length; i++)
