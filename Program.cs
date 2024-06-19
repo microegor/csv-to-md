@@ -15,13 +15,15 @@
         Console.WriteLine($"--out: {outFile}");
 
         string[][] tableArray = ReadCSV(inFile);
-        PrintMD(tableArray);
+        var md = FormatMD(tableArray);
+        Console.WriteLine(md);
 
         return 0;
     }
 
-    private static void PrintMD(string[][] tableArray)
+    private static string FormatMD(string[][] tableArray)
     {
+        List<string> lines = new List<string>();
         for (int i = 0; i < tableArray.Length; i++)
         {
             var row = tableArray[i];
@@ -31,7 +33,7 @@
                 var columnSize = GetColumnSize(tableArray, j);
                 text += " " + row[j].PadRight(columnSize, ' ') + " |";
             }
-            Console.WriteLine(text);
+            lines.Add(text);
 
             // |---|---|...|---|
             if (i == 0)
@@ -43,9 +45,10 @@
                     var columnSize = GetColumnSize(tableArray, j);
                     text += "".PadRight(columnSize + 2, '-') + "|";
                 }
-                Console.WriteLine(text);
+                lines.Add(text);
             }
         }
+        return string.Join("\n", lines);
     }
 
     private static string[][] ReadCSV(string inFile)
