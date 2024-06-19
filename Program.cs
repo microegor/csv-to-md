@@ -5,12 +5,8 @@
         var help = ArgumentParser.GetBoolean(args, "--help") || ArgumentParser.GetBoolean(args, "-h");
         if (help)
         {
-            Console.WriteLine("Usage: Program --in < inputfile > --out < outputfile > [-d,--debug][-h,--help]");
-            Console.WriteLine("Options:");
-            Console.WriteLine("  --in        Specifies the input CSV file");
-            Console.WriteLine("  --out       Specifies the output file(not implemented yet)");
-            Console.WriteLine("  -d,--debug  Enables debug mode for detailed error output");
-            Console.WriteLine("  -h,--help   Displays this help message   ");
+            PrintHelp();
+
             return 0;
         }
         var inFile = ArgumentParser.GetString(args, "--in");
@@ -18,20 +14,14 @@
         var outFile = ArgumentParser.GetString(args, "--out");
         Console.WriteLine($"--out: {outFile}");
 
-        string[] csv = File.ReadAllLines(inFile);
-        List<string[]> table = new List<string[]>();
-        foreach (var row in csv)
-        {
-            string[] cols = row.Split(',');
-            List<string> colsWithotWiteSpaces = new List<string>();
-            foreach (var col in cols)
-            {
-                colsWithotWiteSpaces.Add(col.Trim());
-            }
-            table.Add(colsWithotWiteSpaces.ToArray());
-        }
+        string[][] tableArray = ReadCSV(inFile);
+        PrintMD(tableArray);
 
-        string[][] tableArray = table.ToArray();
+        return 0;
+    }
+
+    private static void PrintMD(string[][] tableArray)
+    {
         for (int i = 0; i < tableArray.Length; i++)
         {
             var row = tableArray[i];
@@ -56,9 +46,37 @@
                 Console.WriteLine(text);
             }
         }
-
-        return 0;
     }
+
+    private static string[][] ReadCSV(string inFile)
+    {
+        string[] csv = File.ReadAllLines(inFile);
+        List<string[]> table = new List<string[]>();
+        foreach (var row in csv)
+        {
+            string[] cols = row.Split(',');
+            List<string> colsWithotWiteSpaces = new List<string>();
+            foreach (var col in cols)
+            {
+                colsWithotWiteSpaces.Add(col.Trim());
+            }
+            table.Add(colsWithotWiteSpaces.ToArray());
+        }
+
+        string[][] tableArray = table.ToArray();
+        return tableArray;
+    }
+
+    private static void PrintHelp()
+    {
+        Console.WriteLine("Usage: Program --in < inputfile > --out < outputfile > [-d,--debug][-h,--help]");
+        Console.WriteLine("Options:");
+        Console.WriteLine("  --in        Specifies the input CSV file");
+        Console.WriteLine("  --out       Specifies the output file(not implemented yet)");
+        Console.WriteLine("  -d,--debug  Enables debug mode for detailed error output");
+        Console.WriteLine("  -h,--help   Displays this help message   ");
+    }
+
     static int GetColumnSize(string[][] table, int index)
     {
         int size = 1;
