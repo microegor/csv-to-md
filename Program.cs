@@ -10,9 +10,7 @@
             return 0;
         }
         var inFile = ArgumentParser.GetString(args, "--in");
-        Console.WriteLine($"--in: {inFile}");
         var outFile = ArgumentParser.GetString(args, "--out");
-        Console.WriteLine($"--out: {outFile}");
 
         string[][] tableArray = ReadCSV(inFile);
         var md = FormatMD(tableArray);
@@ -23,14 +21,30 @@
 
     private static string FormatMD(string[][] tableArray)
     {
+        // Проверка размера таблицы
+        if (tableArray.Length == 0)
+        {
+            return "";
+        }
+
         List<string> lines = new List<string>();
+
+        // Получение размеров столбцов
+        List<int> colSizes = new List<int>();
+        for (int i = 0; i < tableArray[0].Length; i++)
+        {
+            var size = GetColumnSize(tableArray, i);
+            colSizes.Add(size);
+        }
+
+        // Преобразование таблицы в текст MD
         for (int i = 0; i < tableArray.Length; i++)
         {
             var row = tableArray[i];
             string text = "|";
             for (int j = 0; j < row.Length; j++)
             {
-                var columnSize = GetColumnSize(tableArray, j);
+                var columnSize = colSizes[j];
                 text += " " + row[j].PadRight(columnSize, ' ') + " |";
             }
             lines.Add(text);
@@ -38,16 +52,17 @@
             // |---|---|...|---|
             if (i == 0)
             {
-                var colSize = row.Length;
                 text = "|";
-                for (int j = 0; j < colSize; j++)
+                for (int j = 0; j < row.Length; j++)
                 {
-                    var columnSize = GetColumnSize(tableArray, j);
+                    var columnSize = colSizes[j];
                     text += "".PadRight(columnSize + 2, '-') + "|";
                 }
                 lines.Add(text);
             }
         }
+
+        // Склейка текста и вывод
         return string.Join("\n", lines);
     }
 
